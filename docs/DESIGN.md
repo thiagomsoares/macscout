@@ -14,7 +14,7 @@ The style guide and motion/sound spec for Macscout.
 - **8-bit sound design, synthesized in code** — a chiptune engine generates the
   cues per event (no large audio assets).
 - **Motion vocabulary** — rotating glow highlights, spring-like expand/collapse,
-  auto-reveal with dwell; motion celebrates and warns, then gets out of the way.
+  auto-reveal with dwell.
 
 ## Macscout principles
 
