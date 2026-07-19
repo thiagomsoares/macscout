@@ -1,0 +1,159 @@
+/* Macscout — Português (Brasil). Keys are the English copy. */
+
+/* Shared / band / panel */
+"System" = "Sistema";
+"stale" = "desatualizado";
+"DEMO MODE" = "MODO DEMO";
+"DEMO" = "DEMO";
+"%d min ago" = "há %d min";
+"%d min ago · Macscout" = "há %d min · Macscout";
+"Dismiss" = "Dispensar";
+"Refresh" = "Atualizar";
+"Settings" = "Ajustes";
+"Settings…" = "Ajustes…";
+"Quit Macscout" = "Encerrar Macscout";
+"Open Panel" = "Abrir Painel";
+"Window" = "Janela";
+"Macscout Settings" = "Ajustes do Macscout";
+"Blood glucose %@, %@" = "Glicemia %@, %@";
+
+/* Stats */
+"BELOW" = "ABAIXO";
+"IN RANGE" = "NO ALVO";
+"ABOVE" = "ACIMA";
+"MEAN" = "MÉDIA";
+"READINGS" = "LEITURAS";
+"No data in the last %dh" = "Sem dados nas últimas %dh";
+
+/* Alert kinds */
+"Urgent Low" = "Muito Baixa";
+"Low" = "Baixa";
+"High" = "Alta";
+"Urgent High" = "Muito Alta";
+"Rising Fast" = "Subindo Rápido";
+"Falling Fast" = "Caindo Rápido";
+"Stale Data" = "Dados Desatualizados";
+
+/* Alert messages */
+"Urgent low: %@ %@" = "Muito baixa: %@ %@";
+"Low: %@ %@" = "Baixa: %@ %@";
+"High: %@ %@" = "Alta: %@ %@";
+"Urgent high: %@ %@" = "Muito alta: %@ %@";
+"Rising fast: %@ %@" = "Subindo rápido: %@ %@";
+"Falling fast: %@ %@" = "Caindo rápido: %@ %@";
+"No new data for %d min" = "Sem dados novos há %d min";
+
+/* Errors */
+"Invalid Nightscout URL." = "URL do Nightscout inválida.";
+"Unauthorized — check token / api-secret." = "Não autorizado — verifique o token / api-secret.";
+"Server returned HTTP %d." = "O servidor retornou HTTP %d.";
+"Unexpected response format." = "Formato de resposta inesperado.";
+"Invalid Nightscout URL — open Settings." = "URL do Nightscout inválida — abra os Ajustes.";
+"Invalid URL — use http(s)://host" = "URL inválida — use http(s)://host";
+"Connected%@" = "Conectado%@";
+
+/* Trend accessibility */
+"rising rapidly" = "subindo rapidamente";
+"rising" = "subindo";
+"rising slowly" = "subindo devagar";
+"steady" = "estável";
+"falling slowly" = "caindo devagar";
+"falling" = "caindo";
+"falling rapidly" = "caindo rapidamente";
+"trend unavailable" = "tendência indisponível";
+"rate out of range" = "variação fora da escala";
+
+/* Settings tabs */
+"General" = "Geral";
+"Alerts" = "Alertas";
+"Sounds" = "Sons";
+"About" = "Sobre";
+
+/* Settings — General */
+"Site URL" = "URL do site";
+"Token (optional)" = "Token (opcional)";
+"API secret (optional)" = "API secret (opcional)";
+"access token" = "token de acesso";
+"Test Connection" = "Testar Conexão";
+"Testing…" = "Testando…";
+"Display" = "Exibição";
+"Language" = "Idioma";
+"Units" = "Unidades";
+"Default chart window" = "Janela padrão do gráfico";
+"%d hours" = "%d horas";
+"Show menu bar icon" = "Mostrar ícone na barra de menus";
+"Behavior" = "Comportamento";
+"Polling interval" = "Intervalo de atualização";
+"30 seconds" = "30 segundos";
+"1 minute" = "1 minuto";
+"2 minutes" = "2 minutos";
+"5 minutes" = "5 minutos";
+"Launch at login" = "Abrir ao iniciar sessão";
+"Expand notch on hover" = "Expandir o notch ao passar o mouse";
+"Demo mode" = "Modo demo";
+
+/* Settings — Alerts */
+"Glucose" = "Glicemia";
+"Rate of change" = "Velocidade de variação";
+"Stale data" = "Dados desatualizados";
+"after %d min" = "após %d min";
+"Repeat alert every %d min" = "Repetir alerta a cada %d min";
+"Repeat urgent every %d min" = "Repetir urgente a cada %d min";
+"Auto-expand panel on urgent alerts" = "Expandir painel em alertas urgentes";
+"Quiet hours (mute sounds only)" = "Horário silencioso (silencia apenas os sons)";
+"From" = "De";
+"To" = "Até";
+"at" = "em";
+"Sound" = "Som";
+
+/* Settings — Sounds */
+"Volume" = "Volume";
+"Alert volume" = "Volume dos alertas";
+"Preview" = "Prévia";
+"Play" = "Tocar";
+"Quiet hours are on — sounds are muted, visual alerts still fire." = "Horário silencioso ativo — sons silenciados; alertas visuais continuam.";
+"None" = "Nenhum";
+"8-bit (synthesized)" = "8-bit (sintetizado)";
+
+/* Settings — About */
+"Version %@" = "Versão %@";
+"An open-source macOS notch / menu-bar client for Nightscout.\nNot affiliated with the Nightscout project." = "Um cliente open-source do Nightscout para o notch / barra de menus do macOS.\nNão afiliado ao projeto Nightscout.";
+"Created by Thiago Mota Soares" = "Criado por Thiago Mota Soares";
+"If Macscout helps you, a star on GitHub and a follow on Instagram make my day!" = "Se o Macscout te ajuda, uma estrela no GitHub e um follow no Instagram fazem meu dia!";
+"@paipancreas on Instagram" = "@paipancreas no Instagram";
+"Replay Onboarding…" = "Rever Introdução…";
+"MIT License · © Thiago Mota Soares and contributors" = "Licença MIT · © Thiago Mota Soares e colaboradores";
+"Dedicated to the AndroidAPS community and to my son, George Benício Soares. ❤️" = "Dedicado a toda a comunidade AndroidAPS e ao meu filho, George Benício Soares. ❤️";
+
+/* Onboarding */
+"Skip" = "Pular";
+"Back" = "Voltar";
+"Next" = "Avançar";
+"ACT %d OF 5" = "ATO %d DE 5";
+"Step %d of 5" = "Passo %d de 5";
+"Your Nightscout, in the notch." = "Seu Nightscout, no notch.";
+"Why the notch?" = "Por que o notch?";
+"You check your glucose dozens of times a day." = "Você olha sua glicemia dezenas de vezes por dia.";
+"Connect your Nightscout" = "Conecte seu Nightscout";
+"Know when it matters" = "Saiba na hora certa";
+"Recommended defaults, tuned to your unit. Adjust anytime." = "Padrões recomendados, na sua unidade. Ajuste quando quiser.";
+"Urgent low" = "Muito baixa";
+"Urgent high" = "Muito alta";
+"Reset to recommended" = "Restaurar recomendados";
+"Sounds, quiet hours and repeat intervals live in Settings → Alerts." = "Sons, horário silencioso e repetição ficam em Ajustes → Alertas.";
+"One last thing" = "Uma última coisa";
+"Launch Macscout at login" = "Abrir o Macscout ao iniciar sessão";
+"You're set" = "Tudo pronto";
+"Latest: %@ %@" = "Última: %@ %@";
+"· %d min ago" = "· há %d min";
+
+/* Onboarding v2 copy */
+"Live glucose, trend and alerts at the top of your screen — one glance, zero context switches." = "Glicemia ao vivo, tendência e alertas no topo da tela — uma olhada e pronto.";
+"That black band up there? It's already showing live demo data." = "Aquela faixa preta ali em cima? Já está mostrando dados demo ao vivo.";
+"Every check means grabbing your phone or switching apps — and losing focus." = "Cada conferida é pegar o celular ou trocar de app — e perder o foco.";
+"Macscout keeps it in the notch: one glance and you're back to work." = "O Macscout deixa tudo no notch: uma olhada e você volta ao que importa.";
+"The band up there is running on live demo data right now." = "A faixa ali em cima já está rodando com dados demo agora mesmo.";
+"Paste your Nightscout site address. Token or API secret are only needed if your site requires authentication." = "Cole o endereço do seu site Nightscout. Token ou API secret só são necessários se o seu site exigir autenticação.";
+"No Nightscout yet? Continue with demo data" = "Ainda sem Nightscout? Continue com dados demo";
+"Using demo data — you can continue" = "Usando dados demo — pode avançar";
+"Two quick preferences and you're done." = "Duas preferências rápidas e pronto.";
