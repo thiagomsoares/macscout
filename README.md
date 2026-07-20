@@ -1,5 +1,7 @@
 # Macscout
 
+**English** · **[Português (Brasil)](README.pt-BR.md)**
+
 <p align="center">
   <img src="docs/images/band.png" alt="Macscout collapsed band in the menu bar — caution icon, reading, delta and 12 h pixel trail" width="900">
 </p>
