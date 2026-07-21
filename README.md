@@ -132,6 +132,23 @@ This project is buildable with **Command Line Tools only** (no Xcode). That tool
 - [ ] Widget / StandBy support
 - [ ] Signed & notarized releases
 
+## Contributing
+
+PRs, issues, translations, and design polish are welcome — especially from the
+#WeAreNotWaiting community.
+
+- **[Contributing guide](.github/CONTRIBUTING.md)** — setup, branch names, what makes a good PR
+- **[Pull request template](.github/pull_request_template.md)** — filled in automatically on new PRs
+- **Bug** / **Feature** issue forms under *New issue*
+- **[Code of Conduct](CODE_OF_CONDUCT.md)** · **[Security policy](SECURITY.md)**
+- **[AGENTS.md](AGENTS.md)** — notes for coding agents working in this repo
+
+```bash
+swift test
+./scripts/build.sh
+open dist/Macscout.app
+```
+
 ## The fun bits
 
 The band carries one code-drawn pixel icon beside the reading. A pulsing blood
@@ -164,4 +181,6 @@ Instagram ([@paipancreas](https://instagram.com/paipancreas)) make my day!
 
 ## License
 
-[MIT](LICENSE) © [Thiago Mota Soares](https://github.com/thiagomsoares) and Macscout contributors
+[MIT](LICENSE) © [Thiago Mota Soares](https://github.com/thiagomsoares) and [Macscout contributors](https://github.com/thiagomsoares/macscout/graphs/contributors)
+
+By contributing, you agree that your contributions are licensed under the MIT License.

@@ -1,0 +1,80 @@
+name: Bug report
+description: Something in Macscout is broken or surprising
+title: "[Bug]: "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time. Include enough detail that someone else can reproduce the issue.
+        **Macscout is not a medical device** — if this is about a wrong or missing reading that affected a treatment decision, say so clearly.
+
+  - type: input
+    id: macscout_version
+    attributes:
+      label: Macscout version
+      description: Settings → About, or the DMG name (e.g. 0.1.0).
+      placeholder: "0.1.0"
+    validations:
+      required: true
+
+  - type: input
+    id: macos_version
+    attributes:
+      label: macOS version
+      placeholder: "macOS 15.1"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: hardware
+    attributes:
+      label: Mac hardware
+      options:
+        - MacBook with notch
+        - Mac without notch (floating pill)
+        - Both / not sure
+    validations:
+      required: true
+
+  - type: dropdown
+    id: data_source
+    attributes:
+      label: Data source
+      options:
+        - Real Nightscout site
+        - Demo mode
+        - Both
+        - Not sure
+    validations:
+      required: true
+
+  - type: textarea
+    id: details
+    attributes:
+      label: What happened?
+      description: Short summary, steps to reproduce, expected vs actual.
+      placeholder: |
+        Short summary:
+        The band stayed gray even though Nightscout had a fresh reading.
+
+        Steps:
+        1. …
+        2. …
+        3. …
+
+        Expected:
+        …
+
+        Actual:
+        …
+    validations:
+      required: true
+
+  - type: textarea
+    id: extra
+    attributes:
+      label: Extra context
+      description: Screenshots, screen recordings, relevant Settings (units, polling interval), Console logs. Redact Nightscout URLs and tokens.
+    validations:
+      required: false
