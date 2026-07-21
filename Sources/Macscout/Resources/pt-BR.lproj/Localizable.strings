@@ -125,6 +125,31 @@
 "MIT License · © Thiago Mota Soares and contributors" = "Licença MIT · © Thiago Mota Soares e colaboradores";
 "Dedicated to the AndroidAPS community and to my son, George Benício Soares. ❤️" = "Dedicado a toda a comunidade AndroidAPS e ao meu filho, George Benício Soares. ❤️";
 
+/* Updates */
+"Check for Updates…" = "Buscar Atualizações…";
+"Check Again" = "Verificar de Novo";
+"Checking for updates…" = "Buscando atualizações…";
+"You're up to date" = "Você está atualizado";
+"You're up to date (%@)" = "Você está atualizado (%@)";
+"Macscout %@ is the latest release." = "O Macscout %@ é a versão mais recente.";
+"Macscout %@ is available" = "Macscout %@ disponível";
+"You have %@. Download %@ (%@) to your Downloads folder and open it to install." = "Você tem %@. Baixe %@ (%@) na pasta Downloads e abra para instalar.";
+"Download %@ (%@) to your Downloads folder." = "Baixe %@ (%@) na pasta Downloads.";
+"Download" = "Baixar";
+"Downloading…" = "Baixando…";
+"Download complete" = "Download concluído";
+"Open the DMG and drag Macscout into Applications." = "Abra o DMG e arraste o Macscout para Aplicativos.";
+"Open DMG" = "Abrir DMG";
+"View Release" = "Ver Release";
+"Later" = "Depois";
+"Try Again" = "Tentar de Novo";
+"Could not check for updates" = "Não foi possível buscar atualizações";
+"Could not read the latest version." = "Não foi possível ler a versão mais recente.";
+"Could not read the installed version." = "Não foi possível ler a versão instalada.";
+"Latest release has no DMG to download." = "A release mais recente não tem DMG para baixar.";
+"Download failed (HTTP %d)." = "Falha no download (HTTP %d).";
+"OK" = "OK";
+
 /* Onboarding */
 "Skip" = "Pular";
 "Back" = "Voltar";

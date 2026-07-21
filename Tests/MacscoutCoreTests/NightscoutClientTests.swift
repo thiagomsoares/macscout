@@ -238,6 +238,8 @@ func registerLocalTests() {
     register("AlertEngine", AlertEngineTests.tests)
     register("StatsCalculator", StatsCalculatorTests.tests)
     register("Chiptune", ChiptuneTests.tests)
+    register("AppVersion", AppVersionTests.tests)
+    register("GitHubRelease", GitHubReleaseTests.tests)
 }
 
 /// Registers the URLSession-based suites; run in a child process (see

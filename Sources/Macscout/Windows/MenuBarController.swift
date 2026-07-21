@@ -3,21 +3,26 @@ import Combine
 import MacscoutCore
 
 /// NSStatusItem showing the current BG ("118 ↗") colored by range, plus the
-/// app menu (Open Panel / Refresh / Settings… / Quit).
+/// app menu (Open Panel / Refresh / Settings… / Check for Updates… / Quit).
 @MainActor
 final class MenuBarController: NSObject {
     private var statusItem: NSStatusItem?
     private let appState: AppState
     private let onOpenPanel: () -> Void
     private let onSettings: () -> Void
+    private let onCheckForUpdates: () -> Void
     private var cancellables = Set<AnyCancellable>()
     /// Refresh the "x min ago" tooltip periodically.
     private var tooltipTimer: Timer?
 
-    init(appState: AppState, onOpenPanel: @escaping () -> Void, onSettings: @escaping () -> Void) {
+    init(appState: AppState,
+         onOpenPanel: @escaping () -> Void,
+         onSettings: @escaping () -> Void,
+         onCheckForUpdates: @escaping () -> Void = {}) {
         self.appState = appState
         self.onOpenPanel = onOpenPanel
         self.onSettings = onSettings
+        self.onCheckForUpdates = onCheckForUpdates
         super.init()
 
         if appState.settings.showMenuBarIcon {
@@ -52,6 +57,7 @@ final class MenuBarController: NSObject {
         menu.addItem(withTitle: L("Refresh"), action: #selector(refresh), keyEquivalent: "r")
         menu.addItem(.separator())
         menu.addItem(withTitle: L("Settings…"), action: #selector(settings), keyEquivalent: ",")
+        menu.addItem(withTitle: L("Check for Updates…"), action: #selector(checkForUpdates), keyEquivalent: "")
         menu.addItem(.separator())
         menu.addItem(withTitle: L("Quit Macscout"), action: #selector(quit), keyEquivalent: "q")
         menu.items.forEach { $0.target = self }
@@ -90,5 +96,6 @@ final class MenuBarController: NSObject {
     @objc private func openPanel() { onOpenPanel() }
     @objc private func refresh() { appState.refresh() }
     @objc private func settings() { onSettings() }
+    @objc private func checkForUpdates() { onCheckForUpdates() }
     @objc private func quit() { NSApp.terminate(nil) }
 }
