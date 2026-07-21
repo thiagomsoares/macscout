@@ -134,6 +134,23 @@ Este projeto compila **apenas com as Command Line Tools** (sem Xcode). Essa tool
 - [ ] Suporte a Widget / StandBy
 - [ ] Releases assinadas e notarizadas
 
+## Contribuindo
+
+PRs, issues, traduções e polish de design são bem-vindos — em especial da
+comunidade #WeAreNotWaiting.
+
+- **[Guia de contribuição](.github/CONTRIBUTING.md)** (em inglês) — setup, nomes de branch, o que faz um bom PR
+- **[Template de pull request](.github/pull_request_template.md)** — preenchido automaticamente em PRs novos
+- Formulários de **Bug** / **Feature** em *New issue*
+- **[Código de Conduta](CODE_OF_CONDUCT.md)** · **[Política de segurança](SECURITY.md)**
+- **[AGENTS.md](AGENTS.md)** — notas para coding agents neste repositório
+
+```bash
+swift test
+./scripts/build.sh
+open dist/Macscout.app
+```
+
 ## A parte divertida
 
 A banda carrega um ícone pixel desenhado em código ao lado da leitura. Uma gota de
@@ -166,4 +183,6 @@ follow no Instagram ([@paipancreas](https://instagram.com/paipancreas)) fazem me
 
 ## Licença
 
-[MIT](LICENSE) © [Thiago Mota Soares](https://github.com/thiagomsoares) e colaboradores do Macscout
+[MIT](LICENSE) © [Thiago Mota Soares](https://github.com/thiagomsoares) e [colaboradores do Macscout](https://github.com/thiagomsoares/macscout/graphs/contributors)
+
+Ao contribuir, você concorda que suas contribuições são licenciadas sob a Licença MIT.

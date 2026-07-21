@@ -1,0 +1,49 @@
+name: Feature request
+description: Suggest an improvement for Macscout
+title: "[Feature]: "
+labels: ["enhancement"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Start from the problem. The best requests explain what you're trying to do at a glance,
+        not only the widget you wish existed.
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem or use case
+      description: What are you trying to do, and what is missing or painful today?
+      placeholder: |
+        I care for two people with Nightscout sites and have to quit/relaunch Macscout to switch.
+    validations:
+      required: true
+
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed solution
+      description: Describe the change you'd like to see. Mockups welcome.
+      placeholder: |
+        A profile switcher in Settings (and maybe the band context menu) that swaps site URL + secrets.
+    validations:
+      required: true
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives or additional context
+      description: Workarounds, related apps, links, anything else that helps.
+    validations:
+      required: false
+
+  - type: checkboxes
+    id: constraints
+    attributes:
+      label: Project constraints you're OK respecting
+      description: Macscout stays small on purpose. Tick the ones you've considered.
+      options:
+        - label: No new third-party dependencies (or I explained why one is justified)
+        - label: Works on macOS 14+ without full Xcode
+        - label: Keeps secrets in the Keychain
+        - label: Does not weaken stale / urgent visual signals
