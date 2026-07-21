@@ -1,3 +1,4 @@
+import AppKit
 import SwiftUI
 import MacscoutCore
 
@@ -24,6 +25,7 @@ struct NotchPanelRootView: View {
         // The window-frame spring provides all the motion; content swaps instantly.
     }
 }
+
 
 /// Collapsed band: an ear of content on each side of the notch — glucose value
 /// + trend on the left, sparkline + delta on the right. Gray "!" when stale.
@@ -161,6 +163,9 @@ struct NotchView: View {
                 radius: appState.onboardingGlowPulse ? 24 : 10)
         .scaleEffect(landingScale)
         .animation(.easeInOut(duration: 0.4), value: appState.onboardingGlowPulse)
+        // Right-click the band for the same quick actions as the menu bar item
+        // — useful when the status item is hidden.
+        .contextMenu { bandContextMenu }
         // Pill "landing bounce" (onboarding ceremony): 1 → 1.12 → 1.
         .onChange(of: appState.pillLanding) { _, landing in
             guard landing else { return }
@@ -175,6 +180,19 @@ struct NotchView: View {
             }
         }
         .accessibilityLabel(LF("Blood glucose %@, %@", appState.displayValue, L(appState.currentEntry?.direction.accessibilityLabel ?? "")))
+    }
+
+    @ViewBuilder
+    private var bandContextMenu: some View {
+        Button(L("Open Panel")) {
+            notchState.expandedByHover = false
+            notchState.expanded = true
+        }
+        Button(L("Refresh")) { appState.refresh() }
+        Divider()
+        Button(L("Settings…")) { appState.onOpenSettings?() }
+        Divider()
+        Button(L("Quit Macscout")) { NSApp.terminate(nil) }
     }
 
     /// Quick spring "pop" on the value whenever a new reading arrives.
@@ -195,25 +213,76 @@ struct NotchBandShape: Shape {
     var bottomCornerRadius: CGFloat = 13
 
     func path(in rect: CGRect) -> Path {
-        let top = topCornerRadius
-        let bottom = bottomCornerRadius
-        var p = Path()
-        p.move(to: CGPoint(x: rect.minX, y: rect.minY))
-        // Concave left ear.
-        p.addQuadCurve(to: CGPoint(x: rect.minX + top, y: rect.minY + top),
-                       control: CGPoint(x: rect.minX + top, y: rect.minY))
-        p.addLine(to: CGPoint(x: rect.minX + top, y: rect.maxY - bottom))
-        // Convex bottom-left corner.
-        p.addQuadCurve(to: CGPoint(x: rect.minX + top + bottom, y: rect.maxY),
-                       control: CGPoint(x: rect.minX + top, y: rect.maxY))
-        p.addLine(to: CGPoint(x: rect.maxX - top - bottom, y: rect.maxY))
-        // Convex bottom-right corner.
-        p.addQuadCurve(to: CGPoint(x: rect.maxX - top, y: rect.maxY - bottom),
-                       control: CGPoint(x: rect.maxX - top, y: rect.maxY))
-        p.addLine(to: CGPoint(x: rect.maxX - top, y: rect.minY + top))
-        // Concave right ear.
-        p.addQuadCurve(to: CGPoint(x: rect.maxX, y: rect.minY),
-                       control: CGPoint(x: rect.maxX - top, y: rect.minY))
+        Path(NotchBandGeometry.cgPath(in: rect,
+                                      topCornerRadius: topCornerRadius,
+                                      bottomCornerRadius: bottomCornerRadius,
+                                      yIncreasesUp: false))
+    }
+}
+
+/// Shared silhouette math for drawing (SwiftUI, y-down) and hit-testing
+/// (AppKit, y-up). Keeping one source of truth means clicks land exactly on
+/// the black pill — empty corners outside the concave ears stay click-through
+/// to the menu bar underneath.
+enum NotchBandGeometry {
+    /// Camera-housing exclusion in the collapsed band: the hardware cutout
+    /// owns that strip, so Macscout must never claim pointer events there.
+    static func cameraZone(in bounds: CGRect, notchWidth: CGFloat) -> CGRect? {
+        guard notchWidth > 0 else { return nil }
+        return CGRect(x: bounds.midX - notchWidth / 2,
+                      y: bounds.minY,
+                      width: notchWidth,
+                      height: bounds.height)
+    }
+
+    static func contains(_ point: CGPoint, in bounds: CGRect,
+                         topCornerRadius: CGFloat, bottomCornerRadius: CGFloat,
+                         yIncreasesUp: Bool) -> Bool {
+        guard bounds.contains(point) else { return false }
+        let path = cgPath(in: bounds,
+                          topCornerRadius: topCornerRadius,
+                          bottomCornerRadius: bottomCornerRadius,
+                          yIncreasesUp: yIncreasesUp)
+        return path.contains(point, using: .winding)
+    }
+
+    /// Builds the band path.
+    /// - Parameter yIncreasesUp: `true` for AppKit view coordinates, `false`
+    ///   for SwiftUI `Shape` coordinates (origin at the top-left).
+    static func cgPath(in rect: CGRect,
+                       topCornerRadius top: CGFloat,
+                       bottomCornerRadius bottom: CGFloat,
+                       yIncreasesUp: Bool) -> CGPath {
+        let p = CGMutablePath()
+        if yIncreasesUp {
+            // AppKit: top edge at maxY, bottom at minY.
+            p.move(to: CGPoint(x: rect.minX, y: rect.maxY))
+            p.addQuadCurve(to: CGPoint(x: rect.minX + top, y: rect.maxY - top),
+                           control: CGPoint(x: rect.minX + top, y: rect.maxY))
+            p.addLine(to: CGPoint(x: rect.minX + top, y: rect.minY + bottom))
+            p.addQuadCurve(to: CGPoint(x: rect.minX + top + bottom, y: rect.minY),
+                           control: CGPoint(x: rect.minX + top, y: rect.minY))
+            p.addLine(to: CGPoint(x: rect.maxX - top - bottom, y: rect.minY))
+            p.addQuadCurve(to: CGPoint(x: rect.maxX - top, y: rect.minY + bottom),
+                           control: CGPoint(x: rect.maxX - top, y: rect.minY))
+            p.addLine(to: CGPoint(x: rect.maxX - top, y: rect.maxY - top))
+            p.addQuadCurve(to: CGPoint(x: rect.maxX, y: rect.maxY),
+                           control: CGPoint(x: rect.maxX - top, y: rect.maxY))
+        } else {
+            // SwiftUI Shape: top edge at minY, bottom at maxY.
+            p.move(to: CGPoint(x: rect.minX, y: rect.minY))
+            p.addQuadCurve(to: CGPoint(x: rect.minX + top, y: rect.minY + top),
+                           control: CGPoint(x: rect.minX + top, y: rect.minY))
+            p.addLine(to: CGPoint(x: rect.minX + top, y: rect.maxY - bottom))
+            p.addQuadCurve(to: CGPoint(x: rect.minX + top + bottom, y: rect.maxY),
+                           control: CGPoint(x: rect.minX + top, y: rect.maxY))
+            p.addLine(to: CGPoint(x: rect.maxX - top - bottom, y: rect.maxY))
+            p.addQuadCurve(to: CGPoint(x: rect.maxX - top, y: rect.maxY - bottom),
+                           control: CGPoint(x: rect.maxX - top, y: rect.maxY))
+            p.addLine(to: CGPoint(x: rect.maxX - top, y: rect.minY + top))
+            p.addQuadCurve(to: CGPoint(x: rect.maxX, y: rect.minY),
+                           control: CGPoint(x: rect.maxX - top, y: rect.minY))
+        }
         p.closeSubpath()
         return p
     }

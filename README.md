@@ -35,7 +35,7 @@
 ## Features
 
 - **Live glucose in the notch** — a black pill that blends into the MacBook notch showing BG value, trend arrow, and delta in crisp pixel type (Departure Mono), color-coded the Nightscout way (green in range, yellow high, red low, gray stale). On Macs without a notch it floats just under the menu bar.
-- **Notch-native interaction** — rest the pointer on the pill and it springs open (0.12 s hover delay, 0.35 s leave grace); click to pin it open. Expand/collapse uses a real spring animator (expand 0.40/0.70, collapse 0.34/0.85 — hand-tuned).
+- **Notch-native interaction** — rest the pointer on the pill and it springs open (0.12 s hover delay, 0.35 s leave grace); click to pin it open. Expand/collapse uses a real spring animator (expand 0.40/0.70, collapse 0.34/0.85 — hand-tuned). Shape-aware hit testing keeps empty corners and the camera housing click-through to the menu bar; the first click counts without a focus steal; right-click the band for Open Panel / Refresh / Settings… / Quit. Stays visible above fullscreen apps.
 - **Full dashboard** — green-phosphor dot-matrix glucose chart (pure Canvas) with target-range band, out-of-range dots in yellow/red, dose-weighted insulin lane, carb markers and hover tooltips; time-in-range stats, mean, and GMI over 6 / 12 / 24 h.
 - **Menu bar readout** — `118 ↗` in the native system label color, with a tooltip showing data age and quick actions (Open Panel, Refresh, Settings…, Quit).
 - **Configurable alerts** — urgent low / low / high / urgent high thresholds, rising/falling-fast delta alerts, stale-data alerts, per-category sounds, cooldowns, quiet hours (sounds muted only), and optional auto-expand of the panel on urgent alerts.

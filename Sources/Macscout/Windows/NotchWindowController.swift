@@ -28,13 +28,17 @@ final class NotchWindowController {
     private let panel: NotchPanel
     private let state = NotchState()
     private let appState: AppState
-    private var hosting: NSHostingView<NotchPanelRootView>!
+    private var hosting: NotchContentView!
     private var mouseMonitor: Any?
     private var localMouseMonitor: Any?
     private let springAnimator = SpringFrameAnimator()
     private var screenObserver: NSObjectProtocol?
 
     private let expandedSize = NSSize(width: 700, height: 380)
+    /// Expanded panel uses a slightly looser bottom radius than the band.
+    private let expandedBottomRadius: CGFloat = 16
+    private let collapsedBottomRadius: CGFloat = 13
+    private let topCornerRadius: CGFloat = 6
 
     init(appState: AppState) {
         self.appState = appState
@@ -46,7 +50,12 @@ final class NotchWindowController {
         panel.backgroundColor = .clear
         panel.isOpaque = false
         panel.hasShadow = false
-        panel.collectionBehavior = [.canJoinAllSpaces, .stationary, .ignoresCycle]
+        // fullScreenAuxiliary keeps the pill visible above fullscreen apps
+        // (Keynote, games, immersive video) instead of disappearing with the
+        // menu bar. ignoresCycle keeps ⌘` from landing on a chrome-less panel.
+        panel.collectionBehavior = [
+            .canJoinAllSpaces, .stationary, .fullScreenAuxiliary, .ignoresCycle
+        ]
         panel.isMovable = false
         panel.onEscape = { [weak self] in self?.collapse() }
         state.onHover = { [weak self] inside in
@@ -54,7 +63,14 @@ final class NotchWindowController {
         }
 
         let root = NotchPanelRootView(appState: appState, notchState: state)
-        hosting = NSHostingView(rootView: root)
+        hosting = NotchContentView(rootView: root)
+        hosting.isExpanded = { [weak self] in self?.state.expanded ?? false }
+        hosting.collapsedLayout = { [weak self] in
+            self?.state.collapsedLayout ?? .init(notchWidth: 0, earWidth: 100)
+        }
+        hosting.topCornerRadius = topCornerRadius
+        hosting.collapsedBottomRadius = collapsedBottomRadius
+        hosting.expandedBottomRadius = expandedBottomRadius
         panel.contentView = hosting
 
         // NOTE: @Published emits in willSet — reading state.expanded inside the
@@ -120,22 +136,36 @@ final class NotchWindowController {
             // menu bar on both sides (the hardware cutout blends the middle).
             let notch = notchWidth(screen)
             let width = notch + earWidth * 2
-            let height = screen.safeAreaInsets.top
+            let height = max(screen.safeAreaInsets.top, 32)
             state.collapsedLayout = .init(notchWidth: notch, earWidth: earWidth)
             return NSRect(x: screenFrame.midX - width / 2,
                           y: screenFrame.maxY - height,
                           width: width, height: height)
         }
         // Floating pill just under the menu bar (no cutout — ears touch).
+        // In a fullscreen space the menu bar is auto-hidden; park the pill on
+        // the top edge so it stays glanceable without a status strip.
         state.collapsedLayout = .init(notchWidth: 0, earWidth: earWidth)
+        let menuH = menuBarHeight(screen)
+        let y: CGFloat
+        if isFullscreenSpace(screen) {
+            y = screenFrame.maxY - 36
+        } else {
+            y = screenFrame.maxY - menuH - 6 - 36
+        }
         return NSRect(x: screenFrame.midX - earWidth,
-                      y: screenFrame.maxY - menuBarHeight(screen) - 6 - 36,
+                      y: y,
                       width: earWidth * 2, height: 36)
     }
 
     private func menuBarHeight(_ screen: NSScreen) -> CGFloat {
         // Visible frame starts below the menu bar on notch-less screens.
         screen.frame.height - screen.visibleFrame.height - screen.safeAreaInsets.top
+    }
+
+    /// Menu bar is auto-hidden (typical of a fullscreen Space).
+    private func isFullscreenSpace(_ screen: NSScreen) -> Bool {
+        screen.visibleFrame.maxY >= screen.frame.maxY - 1
     }
 
     private func expandedFrame(on screen: NSScreen) -> NSRect {
@@ -258,7 +288,58 @@ final class NotchWindowController {
     }
 }
 
+// MARK: - Content view (shape-aware hit testing)
+
+/// Hosts the SwiftUI tree and owns pointer hit-testing for the notch chrome.
+///
+/// The window frame is a rectangle, but the visible chrome is `NotchBandShape`.
+/// Returning `nil` from `hitTest` for empty corners and the camera housing lets
+/// menu-bar items (and the desktop under a floating pill) keep their clicks.
+private final class NotchContentView: NSHostingView<NotchPanelRootView> {
+    var isExpanded: () -> Bool = { false }
+    var collapsedLayout: () -> NotchState.CollapsedLayout = {
+        .init(notchWidth: 0, earWidth: 100)
+    }
+    var topCornerRadius: CGFloat = 6
+    var collapsedBottomRadius: CGFloat = 13
+    var expandedBottomRadius: CGFloat = 16
+
+    /// First click on the pill counts even when Macscout is not the active app —
+    /// critical for a status-level chrome that must never require a focus steal.
+    override func acceptsFirstMouse(for event: NSEvent?) -> Bool { true }
+
+    override func hitTest(_ point: NSPoint) -> NSView? {
+        guard bounds.contains(point) else { return nil }
+
+        let expanded = isExpanded()
+        let bottom = expanded ? expandedBottomRadius : collapsedBottomRadius
+        // Collapsed floating pill has no concave ears (top radius 0).
+        let top: CGFloat = {
+            if expanded { return topCornerRadius }
+            return collapsedLayout().notchWidth > 0 ? topCornerRadius : 0
+        }()
+
+        if !expanded {
+            let layout = collapsedLayout()
+            if let camera = NotchBandGeometry.cameraZone(in: bounds, notchWidth: layout.notchWidth),
+               camera.contains(point) {
+                return nil
+            }
+        }
+
+        if !NotchBandGeometry.contains(point, in: bounds,
+                                       topCornerRadius: top,
+                                       bottomCornerRadius: bottom,
+                                       yIncreasesUp: true) {
+            return nil
+        }
+
+        return super.hitTest(point)
+    }
+}
+
 /// NSPanel subclass that resigns key status on escape.
+/// First-click handling lives on `NotchContentView.acceptsFirstMouse`.
 private final class NotchPanel: NSPanel {
     var onEscape: (() -> Void)?
 

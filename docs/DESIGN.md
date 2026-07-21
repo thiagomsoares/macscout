@@ -122,6 +122,24 @@ unless the reading is urgent):
 | 222 | duck |
 | 314 | π |
 
+## Notch interaction
+
+The pill is status-level chrome, not a normal window:
+
+- **Shape-aware hit testing** — the window frame is a rectangle, but pointer
+  events only land inside `NotchBandShape`. Empty corners outside the concave
+  ears (and the camera-housing strip on notched Macs) stay click-through to the
+  menu bar underneath. Geometry lives in one place (`NotchBandGeometry`) so the
+  drawn silhouette and the hit path can never drift apart.
+- **First click counts** — `acceptsFirstMouse` on the panel and hosting view so
+  a click expands the dashboard without a prior focus steal.
+- **Right-click the band** — same quick actions as the menu bar item (Open
+  Panel / Refresh / Settings… / Quit), so the app stays fully operable when the
+  status item is hidden.
+- **Fullscreen Spaces** — `fullScreenAuxiliary` keeps the pill above fullscreen
+  apps; on notch-less displays the floating pill parks on the top edge when the
+  menu bar is auto-hidden.
+
 ## Motion spec
 
 | Moment | Curve | Duration | Notes |
