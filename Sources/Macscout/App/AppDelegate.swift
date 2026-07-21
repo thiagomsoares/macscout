@@ -7,6 +7,7 @@ import MacscoutCore
 @MainActor
 final class AppDelegate: NSObject, NSApplicationDelegate {
     private(set) var appState: AppState!
+    private(set) var updates: UpdateController!
     private var menuBar: MenuBarController?
     private var notchWindow: NotchWindowController?
     private var settingsWindow: NSWindow?
@@ -19,6 +20,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         L10n.apply(settings.appLanguage) // before any UI exists
         let state = AppState(settings: settings)
         appState = state
+        updates = UpdateController()
 
         // Language switch: re-resolve the localization bundle and rebuild
         // every visible surface (delivered after didSet — see AppState note).
@@ -30,7 +32,8 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
 
         menuBar = MenuBarController(appState: state,
                                     onOpenPanel: { [weak self] in self?.togglePanel() },
-                                    onSettings: { [weak self] in self?.showSettings() })
+                                    onSettings: { [weak self] in self?.showSettings() },
+                                    onCheckForUpdates: { [weak self] in self?.updates.checkAndPresentAlert() })
         notchWindow = NotchWindowController(appState: state)
 
         state.onUrgentAlert = { [weak self] in
@@ -54,6 +57,12 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
                 self?.showOnboarding()
             }
         }
+
+        // Quiet launch check — only surfaces in About if something newer exists.
+        // Delay so we don't compete with first-run onboarding / Nightscout poll.
+        DispatchQueue.main.asyncAfter(deadline: .now() + 8) { [weak self] in
+            self?.updates.checkInBackground()
+        }
     }
 
     /// Re-resolves the language bundle and rebuilds the localized surfaces.
@@ -63,7 +72,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         menuBar?.reloadContent()
         if let window = settingsWindow {
             window.title = L("Macscout Settings")
-            window.contentView = NSHostingView(rootView: SettingsView(appState: appState))
+            window.contentView = NSHostingView(rootView: SettingsView(appState: appState, updates: updates))
         }
     }
 
@@ -94,7 +103,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             NSApp.activate(ignoringOtherApps: true)
             return
         }
-        let window = SettingsView.makeWindow(appState: appState)
+        let window = SettingsView.makeWindow(appState: appState, updates: updates)
         settingsWindow = window
         window.center()
         window.makeKeyAndOrderFront(nil)

@@ -6,16 +6,17 @@ import MacscoutCore
 /// Settings window (General / Alerts / Sounds / About tabs).
 struct SettingsView: View {
     @ObservedObject var appState: AppState
+    @ObservedObject var updates: UpdateController
 
     /// Builds the settings NSWindow hosting this view.
     @MainActor
-    static func makeWindow(appState: AppState) -> NSWindow {
+    static func makeWindow(appState: AppState, updates: UpdateController) -> NSWindow {
         let window = NSWindow(
-            contentRect: NSRect(x: 0, y: 0, width: 500, height: 540),
+            contentRect: NSRect(x: 0, y: 0, width: 500, height: 560),
             styleMask: [.titled, .closable, .miniaturizable],
             backing: .buffered, defer: false)
         window.title = L("Macscout Settings")
-        window.contentView = NSHostingView(rootView: SettingsView(appState: appState))
+        window.contentView = NSHostingView(rootView: SettingsView(appState: appState, updates: updates))
         window.isReleasedWhenClosed = false
         return window
     }
@@ -31,10 +32,10 @@ struct SettingsView: View {
                 .tabItem { Label(L("Alerts"), systemImage: "bell") }
             SoundsTab(appState: appState, settings: appState.settings)
                 .tabItem { Label(L("Sounds"), systemImage: "speaker.wave.2") }
-            AboutTab(appState: appState)
+            AboutTab(appState: appState, updates: updates)
                 .tabItem { Label(L("About"), systemImage: "info.circle") }
         }
-        .frame(width: 500, height: 540)
+        .frame(width: 500, height: 560)
     }
 }
 
@@ -307,53 +308,142 @@ private struct SoundsTab: View {
 
 private struct AboutTab: View {
     @ObservedObject var appState: AppState
+    @ObservedObject var updates: UpdateController
 
     var body: some View {
-        VStack(spacing: 12) {
-            Spacer()
-            Image(nsImage: NSApp.applicationIconImage)
-                .resizable()
-                .frame(width: 96, height: 96)
-            Text("Macscout")
-                .font(.title.bold())
-            Text(LF("Version %@",
-                    Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String ?? "dev"))
-                .foregroundStyle(.secondary)
-            Text(L("An open-source macOS notch / menu-bar client for Nightscout.\nNot affiliated with the Nightscout project."))
-                .multilineTextAlignment(.center)
+        ScrollView {
+            VStack(spacing: 12) {
+                Image(nsImage: NSApp.applicationIconImage)
+                    .resizable()
+                    .frame(width: 96, height: 96)
+                    .padding(.top, 16)
+                Text("Macscout")
+                    .font(.title.bold())
+                Text(LF("Version %@",
+                        Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String ?? "dev"))
+                    .foregroundStyle(.secondary)
+
+                updateSection
+                    .padding(.vertical, 4)
+
+                Text(L("An open-source macOS notch / menu-bar client for Nightscout.\nNot affiliated with the Nightscout project."))
+                    .multilineTextAlignment(.center)
+                    .font(.callout)
+                    .foregroundStyle(.secondary)
+                Text(L("Created by Thiago Mota Soares"))
+                    .font(.callout.weight(.medium))
+                Text(L("If Macscout helps you, a star on GitHub and a follow on Instagram make my day!"))
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+                    .multilineTextAlignment(.center)
+                HStack(spacing: 18) {
+                    Link("⭐ github.com/thiagomsoares/macscout",
+                         destination: URL(string: "https://github.com/thiagomsoares/macscout")!)
+                    Link(L("@paipancreas on Instagram"),
+                         destination: URL(string: "https://instagram.com/paipancreas")!)
+                }
                 .font(.callout)
-                .foregroundStyle(.secondary)
-            Text(L("Created by Thiago Mota Soares"))
-                .font(.callout.weight(.medium))
-            Text(L("If Macscout helps you, a star on GitHub and a follow on Instagram make my day!"))
-                .font(.caption)
-                .foregroundStyle(.secondary)
-                .multilineTextAlignment(.center)
-            HStack(spacing: 18) {
-                Link("⭐ github.com/thiagomsoares/macscout",
-                     destination: URL(string: "https://github.com/thiagomsoares/macscout")!)
-                Link(L("@paipancreas on Instagram"),
-                     destination: URL(string: "https://instagram.com/paipancreas")!)
+                Button(L("Replay Onboarding…")) {
+                    appState.settings.hasCompletedOnboarding = false
+                    appState.onReplayOnboarding?()
+                }
+                .buttonStyle(.link)
+                Text(L("Dedicated to the AndroidAPS community and to my son, George Benício Soares. ❤️"))
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+                    .multilineTextAlignment(.center)
+                    .padding(.top, 4)
+                Text(L("MIT License · © Thiago Mota Soares and contributors"))
+                    .font(.caption)
+                    .foregroundStyle(.tertiary)
+                Text("Departure Mono font © Helena Zhang — SIL Open Font License 1.1")
+                    .font(.caption2)
+                    .foregroundStyle(.tertiary)
+                    .padding(.bottom, 16)
             }
-            .font(.callout)
-            Button(L("Replay Onboarding…")) {
-                appState.settings.hasCompletedOnboarding = false
-                appState.onReplayOnboarding?()
-            }
-            .buttonStyle(.link)
-            Text(L("Dedicated to the AndroidAPS community and to my son, George Benício Soares. ❤️"))
-                .font(.caption)
-                .foregroundStyle(.secondary)
-                .multilineTextAlignment(.center)
-                .padding(.top, 4)
-            Text(L("MIT License · © Thiago Mota Soares and contributors"))
-                .font(.caption)
-                .foregroundStyle(.tertiary)
-            Text("Departure Mono font © Helena Zhang — SIL Open Font License 1.1")
-                .font(.caption2)
-                .foregroundStyle(.tertiary)
-            Spacer()
+            .frame(maxWidth: .infinity)
+            .padding(.horizontal, 20)
         }
-        .frame(maxWidth: .infinity)
+    }
+
+    @ViewBuilder
+    private var updateSection: some View {
+        VStack(spacing: 8) {
+            switch updates.status {
+            case .idle:
+                Button(L("Check for Updates…")) {
+                    Task { await updates.check() }
+                }
+            case .checking:
+                HStack(spacing: 8) {
+                    ProgressView().controlSize(.small)
+                    Text(L("Checking for updates…"))
+                        .foregroundStyle(.secondary)
+                }
+            case .upToDate(let current):
+                Label(LF("You're up to date (%@)", current), systemImage: "checkmark.circle.fill")
+                    .foregroundStyle(.green)
+                    .font(.callout)
+                Button(L("Check Again")) {
+                    Task { await updates.check() }
+                }
+                .buttonStyle(.link)
+            case .available(let version, _, _, let dmgName, let bytes):
+                VStack(spacing: 6) {
+                    Label(LF("Macscout %@ is available", version), systemImage: "arrow.down.circle.fill")
+                        .font(.callout.weight(.semibold))
+                        .foregroundStyle(Color.accentColor)
+                    Text(LF("Download %@ (%@) to your Downloads folder.",
+                            dmgName, UpdateController.formatBytes(bytes)))
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                        .multilineTextAlignment(.center)
+                    HStack(spacing: 12) {
+                        Button(L("Download")) {
+                            Task { await updates.download() }
+                        }
+                        .buttonStyle(.borderedProminent)
+                        Button(L("View Release")) { updates.openReleasePage() }
+                            .buttonStyle(.link)
+                    }
+                }
+                .padding(12)
+                .frame(maxWidth: 360)
+                .background(.quaternary.opacity(0.5), in: RoundedRectangle(cornerRadius: 10))
+            case .downloading:
+                HStack(spacing: 8) {
+                    ProgressView().controlSize(.small)
+                    Text(L("Downloading…"))
+                        .foregroundStyle(.secondary)
+                }
+            case .downloaded(let fileURL):
+                VStack(spacing: 6) {
+                    Label(L("Download complete"), systemImage: "checkmark.circle.fill")
+                        .foregroundStyle(.green)
+                        .font(.callout.weight(.semibold))
+                    Text(fileURL.lastPathComponent)
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                    Text(L("Open the DMG and drag Macscout into Applications."))
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                        .multilineTextAlignment(.center)
+                    Button(L("Open DMG")) { updates.openDownloaded() }
+                        .buttonStyle(.borderedProminent)
+                }
+            case .failed(let message):
+                VStack(spacing: 6) {
+                    Label(message, systemImage: "exclamationmark.triangle.fill")
+                        .foregroundStyle(.red)
+                        .font(.caption)
+                        .multilineTextAlignment(.center)
+                    Button(L("Try Again")) {
+                        Task { await updates.check() }
+                    }
+                    .buttonStyle(.link)
+                }
+            }
+        }
+        .frame(minHeight: 36)
     }
 }
